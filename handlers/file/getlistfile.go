@@ -12,7 +12,8 @@ func GetListFile(inport getlistfile.Inport) gin.HandlerFunc {
 		var req getlistfile.InportRequest
 
 		// ? Binding Request
-		if err := helper.UnmarshalJSON(c, &req); err != nil {
+		if err := c.Bind(&req); err != nil {
+			helper.WriteError(c, err)
 			return
 		}
 
