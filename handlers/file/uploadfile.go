@@ -17,6 +17,7 @@ import (
 func UploadFile(inport uploadfile.Inport) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req uploadfile.InportRequest
+		var tokens helper.TokenRequest
 
 		// ? Binding Request
 		if err := c.ShouldBind(&req); err != nil {
@@ -24,9 +25,16 @@ func UploadFile(inport uploadfile.Inport) gin.HandlerFunc {
 			return
 		}
 
+		token, err := helper.GetTokenParse(c.Request.Header.Get("Authorization"))
+		err = helper.TransformInterfaceToAnother(token, &tokens)
+		if err != nil {
+			helper.WriteError(c, err)
+			return
+		}
+
 		file, err := c.FormFile("file")
 		if err != nil {
-			c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+			helper.WriteError(c, err)
 			return
 		}
 
@@ -54,7 +62,7 @@ func UploadFile(inport uploadfile.Inport) gin.HandlerFunc {
 		}
 
 		req.Location = dst
-		req.UploadBy = "wihlarkop"
+		req.UploadBy = tokens.Name
 
 		resp, err := inport.Execute(c.Copy().Request.Context(), req)
 		if err != nil {
