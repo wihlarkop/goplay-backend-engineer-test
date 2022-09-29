@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 
@@ -18,7 +19,7 @@ func main() {
 
 	srv, err := server.NewGinHttpRouter(
 		&server.Config{
-			Address: "3000",
+			Address: os.Getenv("PORT"),
 		})
 
 	if err != nil {
