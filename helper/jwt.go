@@ -1,8 +1,11 @@
 package helper
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -34,4 +37,25 @@ func GenerateToken(req TokenRequest) (jwtToken string, err error) {
 	}
 
 	return tokenStr, nil
+}
+
+func GetTokenParse(bearToken string) (interface{}, error) {
+	strArr := strings.Split(bearToken, " ")
+	if len(strArr) != 2 {
+		log.Println(strArr)
+	}
+
+	token, err := jwt.Parse(strArr[1], func(token *jwt.Token) (interface{}, error) {
+		// ! Don't forget to validate the alg what you expect
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	jwtToken := token.Claims.(jwt.MapClaims)
+	sub := jwtToken["sub"]
+
+	return sub, err
 }
