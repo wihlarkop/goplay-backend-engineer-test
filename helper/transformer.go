@@ -1,6 +1,10 @@
 package helper
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"net/url"
+)
 
 func TransformInterfaceToAnother(source interface{}, entity interface{}) error {
 	userByte, err := json.Marshal(source)
@@ -14,4 +18,17 @@ func TransformInterfaceToAnother(source interface{}, entity interface{}) error {
 	}
 
 	return nil
+}
+
+func TransformStructToUrlValue(obj interface{}) url.Values {
+	var objMap map[string]interface{}
+
+	TransformInterfaceToAnother(obj, &objMap)
+
+	data := url.Values{}
+	for i, v := range objMap {
+		data.Set(i, fmt.Sprint(v))
+	}
+
+	return data
 }

@@ -63,7 +63,7 @@ func Authentication() gin.HandlerFunc {
 			})
 			return
 		}
-
+		c.Set("user", token.Claims)
 		c.Next()
 	}
 }
