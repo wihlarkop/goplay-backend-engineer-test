@@ -6,7 +6,7 @@ import (
 	"goplay-backend-engineer-test/entities"
 )
 
-//go:generate mockgen -destination=mock/inport.go -package=mock usecases/user/login Inport
+//go:generate mockgen -destination=mock/inport.go -package=mock goplay-backend-engineer-test/usecase/user/userlogin Inport
 type Inport interface {
 	Execute(context.Context, InportRequest) (InportResponse, error)
 }
