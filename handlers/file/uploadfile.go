@@ -3,6 +3,7 @@ package file
 import (
 	"fmt"
 	"io/fs"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -21,18 +22,23 @@ func UploadFile(inport uploadfile.Inport) gin.HandlerFunc {
 
 		// ? Binding Request
 		if err := c.ShouldBind(&req); err != nil {
+			log.Println(err)
 			helper.WriteError(c, err)
 			return
 		}
 
-		token, err := helper.GetTokenParse(c.Request.Header.Get("Authorization"))
-		err = helper.TransformInterfaceToAnother(token, &tokens)
+		token, _ := c.Get("user")
+		err := helper.TransformInterfaceToAnother(token, &tokens)
+		log.Println(err)
+
 		if err != nil {
 			helper.WriteError(c, err)
 			return
 		}
 
 		file, err := c.FormFile("file")
+		log.Println(err)
+
 		if err != nil {
 			helper.WriteError(c, err)
 			return
@@ -50,6 +56,8 @@ func UploadFile(inport uploadfile.Inport) gin.HandlerFunc {
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			err := os.MkdirAll(path, fs.ModePerm)
+			log.Println(err)
+
 			if err != nil {
 				helper.WriteError(c, err)
 				return

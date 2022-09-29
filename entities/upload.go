@@ -8,6 +8,6 @@ type UploadFile struct {
 }
 
 type UploadFileFilter struct {
-	Page  int
-	Limit int
+	Page  int `json:"page" form:"page" validate:"required"`
+	Limit int `json:"limit" form:"limit" validate:"required"`
 }

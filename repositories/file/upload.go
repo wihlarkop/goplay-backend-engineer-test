@@ -41,16 +41,21 @@ func (r *repo) GetFiles(ctx context.Context, req entities.UploadFileFilter) ([]e
 }
 
 func (r *repo) GetFile(ctx context.Context, req entities.UploadFile) (entities.UploadFile, error) {
-	var files entities.UploadFile
+	var files []entities.UploadFile
+	var file entities.UploadFile
 
 	query := `select id, path, upload_by, created_at from upload_file where id = $1`
 
-	err := r.sqlite.QueryRowxContext(ctx, query, req.Id).StructScan(&files)
+	err := r.sqlite.SelectContext(ctx, &files, query, req.Id)
 	if err != nil {
-		return files, helper.ErrFatalQuery
+		return file, helper.ErrFatalQuery
 	}
 
-	return files, nil
+	if len(files) > 0 {
+		file = files[0]
+	}
+
+	return file, nil
 }
 
 func (r *repo) CreateFile(ctx context.Context, req entities.UploadFile) (entities.UploadFile, error) {
